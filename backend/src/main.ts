@@ -58,28 +58,29 @@ app.post("/camera", multer({ storage }).array("images"), (req, res) => {
     });
 });
 
-app.post("/camera/:id/image", multer({ storage }).array("images"), (req, res) => {
-  Camera.findById(req.params.id)
-    .then((camera) => {
-      if (!camera) return res.status(404).send("Camera not found");
-      camera.name = req.body.name;
-      camera.status = req.body.status;
-      camera.location = req.body.location;
-      camera.images = [
-        ...camera.images,
-        ...(req.files as Array<Express.Multer.File>)?.map(
-          (file) => file.filename
-        ),
-      ];
+app.post(
+  "/camera/:id/image",
+  multer({ storage }).array("images"),
+  (req, res) => {
+    Camera.findById(req.params.id)
+      .then((camera) => {
+        if (!camera) return res.status(404).send("Camera not found");
+        camera.images = [
+          ...camera.images,
+          ...(req.files as Array<Express.Multer.File>)?.map(
+            (file) => file.filename
+          ),
+        ];
 
-      camera.save().then((camera) => {
-        res.send(camera);
+        camera.save().then((camera) => {
+          res.send(camera);
+        });
+      })
+      .catch((error) => {
+        res.send(error);
       });
-    })
-    .catch((error) => {
-      res.send(error);
-    });
-});
+  }
+);
 
 mongoose
   .connect("mongodb://admin:secret@localhost:27017")
