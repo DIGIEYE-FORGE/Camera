@@ -58,7 +58,7 @@ app.post("/camera", multer({ storage }).array("images"), (req, res) => {
     });
 });
 
-app.patch("/camera/:id", multer({ storage }).array("images"), (req, res) => {
+app.post("/camera/:id/image", multer({ storage }).array("images"), (req, res) => {
   Camera.findById(req.params.id)
     .then((camera) => {
       if (!camera) return res.status(404).send("Camera not found");
