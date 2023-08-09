@@ -56,7 +56,9 @@ const Home = () => {
                     </div>
                     <div className="flex items-center justify-between px-5">
                       <span className="text-lg font-bold capitalize">
-                        {camera.name || "-"}
+                        {(camera?.name && camera?.name.length > 10
+                          ? camera?.name.substring(10) + "..."
+                          : camera?.name) || "-"}
                       </span>
                       <span className="text-sm text-orange-600 font-semibold">
                         {camera.status || "-"}

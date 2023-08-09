@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
@@ -10,6 +10,8 @@ import {
 } from "react-icons/bs";
 import { GiNextButton, GiPreviousButton } from "react-icons/gi";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { MdOutlineSaveAlt } from "react-icons/md";
+import { Button } from "@material-tailwind/react";
 
 const getCamera = async (id: string) => {
   const res = await axios.get(`http://${location.hostname}:3000/camera/${id}`);
@@ -32,6 +34,17 @@ const Camera = () => {
     enabled: !!id,
   });
 
+  const exportMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axios.get(
+        `http://${location.hostname}:3000/camera/${id}/export`
+      );
+      console.log({ res });
+
+      return res.data;
+    },
+  });
+
   const handleClick = () => {
     setI(
       setInterval(() => {
@@ -49,12 +62,24 @@ const Camera = () => {
 
   return (
     <div className="flex flex-col w-[90%] mx-auto mt-10 gap-5">
-      <Link
-        to={"/"}
-        className="text-2xl font-bold rounded-md shadow px-5 py-2 bg-blue-500/20 w-[200px] flex items-center gap-5"
-      >
-        <IoMdArrowRoundBack /> {data?.name || "Loading..."}
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link
+          to={"/"}
+          className="text-lg font-bold rounded-md shadow px-5 py-2 bg-blue-500/20 max-w-[200px] flex items-center gap-3"
+          title={data?.name}
+        >
+          <IoMdArrowRoundBack />{" "}
+          {(data?.name && data?.name.length > 10
+            ? data?.name.substring(10) + "..."
+            : data?.name) || "Loading..."}
+        </Link>
+        <Button
+          className="flex items-center gap-3"
+          onClick={() => exportMutation.mutate()}
+        >
+          <MdOutlineSaveAlt className="w-5 h-5" /> Export
+        </Button>
+      </div>
       {data && (
         <div className="w-[100%] h-[500px] bg-black rounded-lg shadow-md overflow-hidden relative">
           <img

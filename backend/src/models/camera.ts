@@ -1,6 +1,13 @@
 import mongoose from "mongoose";
 
-const cameraSchema = new mongoose.Schema(
+export interface ICamera extends mongoose.Document {
+  name: string;
+  status: string;
+  location: string;
+  images: mongoose.Schema.Types.ObjectId[];
+}
+
+const cameraSchema = new mongoose.Schema<ICamera>(
   {
     name: {
       type: String,
@@ -12,13 +19,16 @@ const cameraSchema = new mongoose.Schema(
     location: {
       type: String,
     },
-    images: {
-      type: [String],
-    },
+    images: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-export const Camera = mongoose.model("Camera", cameraSchema);
+export const Camera = mongoose.model<ICamera>("Camera", cameraSchema);
